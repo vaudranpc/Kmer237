@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Les dernières infos sur Facebook</title>
+    <!-- ✅ Bootstrap CSS CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script src="header.js"></script>
+  </head>
+  <body class="bg-light text-center p-4">
+    <div id="header-container"></div>
+    <h1>Politik 225</h1>
+    <h2 class="mb-4">Les pages qui parlent de Politique</h2>
+    <div
+      id="link-container"
+      class="d-flex flex-wrap justify-content-center gap-3"
+    ></div>
+    <div id="footer-container"></div>
+    <script>
+      const myArray = [
+        {
+          nom: "Site du Gouvernement de Côte d'Ivoire",
+          lien: "https://www.facebook.com/gouvciofficiel",
+        },
+        {
+          nom: "Politiques",
+          lien: "https://www.facebook.com/politiquesci",
+        },
+        {
+          nom: "PPACI page facebook  ",
+          lien: "https://www.facebook.com/PartiDesPeuplesAfricainsCoteDivoire",
+        },
+        {
+          nom: "𝐃𝐫. 𝐎𝐬𝐦𝐚𝐧 𝐂𝐡𝐞𝐫𝐢𝐟 - 𝐀𝐧𝐚𝐥𝐲𝐬𝐭𝐞 𝐏𝐨𝐥𝐢𝐭𝐢𝐪𝐮𝐞  ",
+          lien: "https://www.facebook.com/profile.php?id=61568349092568",
+        },
+
+        {
+          nom: "MEL ESSIS Média TV ",
+          lien: "https://www.facebook.com/HKBNational2020",
+        },
+        { nom: "DH-People TV2", lien: "https://www.facebook.com/dhpeopletv2" },
+        {
+          nom: "Agban Ne Se Rallie Jamais  ",
+          lien: "https://www.facebook.com/viggoc17",
+        },
+        {
+          nom: "Jean Bonin",
+          lien: "https://www.facebook.com/KouadioJeanBonin",
+        },
+        { nom: "RHDP TV ", lien: "https://www.facebook.com/rhdptv" },
+        { nom: "Isaac Sarr", lien: "https://www.facebook.com/isaac.sarr.bis" },
+        {
+          nom: "PPA-CI Relais",
+          lien: "https://www.facebook.com/profile.php?id=100092156392637",
+        },
+
+        { nom: "VPG", lien: "https://www.facebook.com/VPGsercom" },
+        {
+          nom: "Nouvelle Afrique ",
+          lien: "https://www.facebook.com/la.nouvelle.afrique.2024",
+        },
+        {
+          nom: "Grand Buzz",
+          lien: "https://www.facebook.com/GrandBuzz",
+        },
+
+        {
+          nom: "Fraternite Matin ",
+          lien: "https://www.fratmat.info/politique",
+        },
+        {
+          nom: "Abidjan on ",
+          lien: "https://www.facebook.com/Abidjanreview",
+        },
+        { nom: "l'infodrome ", lien: "https://www.linfodrome.com/politique" },
+        {
+          nom: "Direct Infos Abidjan",
+          lien: "https://www.facebook.com/profile.php?id=100064107092298",
+        },
+        {
+          nom: "Jossiasse Assemon",
+          lien: "https://www.facebook.com/josiasse.assemon.5",
+        },
+        {
+          nom: "KEVIN FIENI",
+          lien: "https://www.facebook.com/kevinfienici",
+        },
+        ,
+        {
+          nom: "ENQUETE MEDIA",
+          lien: "https://www.facebook.com/enquetemedia",
+        },
+        ,
+        {
+          nom: "DR HUGO",
+          lien: "https://www.facebook.com/Huguofocus",
+        },
+        ,
+        {
+          nom: "Côte d'Ivoire Mag",
+          lien: "https://www.facebook.com/cotedivoiremagci",
+        },
+      ];
+
+      const colors = [
+        "#e6194b",
+        "#3cb44b",
+        "#ffe119",
+        "#4363d8",
+        "#f58231",
+        "#911eb4",
+        "#46f0f0",
+        "#f032e6",
+        "#bcf60c",
+        "#fabebe",
+        "#008080",
+        "#317713",
+        "#9a6324",
+        "#fe45f4",
+        "#800000",
+        "#8affc3",
+        "#808000",
+        "#ffd8b1",
+        "#000075",
+        "#808080",
+        "#f34fff",
+        "#a9a9a9",
+        "#000000",
+        "#a52a2a",
+        "#7fffd4",
+        "#ff69b4",
+      ];
+
+      const container = document.getElementById("link-container");
+
+      myArray.forEach(({ nom, lien }) => {
+        const firstChar = nom.trim()[0].toLowerCase();
+        const alphabetIndex = firstChar.charCodeAt(0) - 97;
+        const color =
+          alphabetIndex >= 0 && alphabetIndex < 26
+            ? colors[alphabetIndex]
+            : "#3a350d";
+
+        const link = document.createElement("a");
+        link.href = lien;
+        link.textContent = nom;
+        link.target = "_blank";
+
+        link.className = "btn btn-primary btn-lg";
+        link.style.backgroundColor = color;
+        link.style.color = color === "#ffffff" ? "#000" : "#fff";
+        link.style.border = "none";
+        link.style.margin = "5px";
+
+        link.addEventListener("click", function () {
+          this.style.backgroundColor = "#333";
+          this.style.color = "#fff";
+        });
+
+        container.appendChild(link);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Équipe de Football</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .position-section {
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #28a745;
+        }
+
+        .position-title {
+            color: #1e3c72;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .position-icon {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .candidate {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #007bff;
+        }
+
+        .candidate.selected {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border-color: #0056b3;
+            transform: scale(1.02);
+        }
+
+        .candidate::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .candidate:hover::before {
+            animation: shine 0.5s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .candidate-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .candidate-info {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .vote-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 15px;
+        }
+
+        .submit-btn {
+            background: white;
+            color: #28a745;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .vote-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            margin: 0 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Vote pour ton Équipe de Football</h1>
+        
+        <div id="alert-container"></div>
+
+        <form id="voteForm">
+            <!-- Gardiens -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">🥅</span>
+                    Gardiens (Choisir 3)
+                </h2>
+                <div class="candidates-grid" data-position="gardiens" data-max="3">
+                    <div class="candidate" data-candidate="Lloris">
+                        <div class="candidate-name">Hugo Lloris</div>
+                        <div class="candidate-info">France, 36 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Maignan">
+                        <div class="candidate-name">Mike Maignan</div>
+                        <div class="candidate-info">France, 28 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Areola">
+                        <div class="candidate-name">Alphonse Areola</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Mandanda">
+                        <div class="candidate-name">Steve Mandanda</div>
+                        <div class="candidate-info">France, 39 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Samba">
+                        <div class="candidate-name">Brice Samba</div>
+                        <div class="candidate-info">France, 30 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latéraux Droits -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">➡️</span>
+                    Latéraux Droits (Choisir 2)
+                </h2>
+                <div class="candidates-grid" data-position="lateraux_droits" data-max="2">
+                    <div class="candidate" data-candidate="Pavard">
+                        <div class="candidate-name">Benjamin Pavard</div>
+                        <div class="candidate-info">France, 28 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Clauss">
+                        <div class="candidate-name">Jonathan Clauss</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Kounde">
+                        <div class="candidate-name">Jules Koundé</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Dubois">
+                        <div class="candidate-name">Léo Dubois</div>
+                        <div class="candidate-info">France, 29 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latéraux Gauches -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">⬅️</span>
+                    Latéraux Gauches (Choisir 2)
+                </h2>
+                <div class="candidates-grid" data-position="lateraux_gauches" data-max="2">
+                    <div class="candidate" data-candidate="Hernandez">
+                        <div class="candidate-name">Lucas Hernandez</div>
+                        <div class="candidate-info">France, 28 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="T_Hernandez">
+                        <div class="candidate-name">Theo Hernandez</div>
+                        <div class="candidate-info">France, 26 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Mendy">
+                        <div class="candidate-name">Ferland Mendy</div>
+                        <div class="candidate-info">France, 29 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Digne">
+                        <div class="candidate-name">Lucas Digne</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Défenseurs -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">🛡️</span>
+                    Défenseurs Centraux (Choisir 4)
+                </h2>
+                <div class="candidates-grid" data-position="defenseurs" data-max="4">
+                    <div class="candidate" data-candidate="Varane">
+                        <div class="candidate-name">Raphaël Varane</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Konate">
+                        <div class="candidate-name">Ibrahima Konaté</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Upamecano">
+                        <div class="candidate-name">Dayot Upamecano</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Saliba">
+                        <div class="candidate-name">William Saliba</div>
+                        <div class="candidate-info">France, 23 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Disasi">
+                        <div class="candidate-name">Axel Disasi</div>
+                        <div class="candidate-info">France, 26 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Fofana">
+                        <div class="candidate-name">Wesley Fofana</div>
+                        <div class="candidate-info">France, 24 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milieux -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">⚽</span>
+                    Milieux de Terrain (Choisir 6)
+                </h2>
+                <div class="candidates-grid" data-position="milieux" data-max="6">
+                    <div class="candidate" data-candidate="Pogba">
+                        <div class="candidate-name">Paul Pogba</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Kante">
+                        <div class="candidate-name">N'Golo Kanté</div>
+                        <div class="candidate-info">France, 33 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Tchouameni">
+                        <div class="candidate-name">Aurélien Tchouaméni</div>
+                        <div class="candidate-info">France, 24 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Camavinga">
+                        <div class="candidate-name">Eduardo Camavinga</div>
+                        <div class="candidate-info">France, 22 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Rabiot">
+                        <div class="candidate-name">Adrien Rabiot</div>
+                        <div class="candidate-info">France, 29 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Veretout">
+                        <div class="candidate-name">Jordan Veretout</div>
+                        <div class="candidate-info">France, 31 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Fofana_Y">
+                        <div class="candidate-name">Youssouf Fofana</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Guendouzi">
+                        <div class="candidate-name">Mattéo Guendouzi</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ailiers Droits -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">🏃‍♂️</span>
+                    Ailiers Droits (Choisir 2)
+                </h2>
+                <div class="candidates-grid" data-position="ailiers_droits" data-max="2">
+                    <div class="candidate" data-candidate="Dembele">
+                        <div class="candidate-name">Ousmane Dembélé</div>
+                        <div class="candidate-info">France, 27 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Coman">
+                        <div class="candidate-name">Kingsley Coman</div>
+                        <div class="candidate-info">France, 28 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Diaby">
+                        <div class="candidate-name">Moussa Diaby</div>
+                        <div class="candidate-info">France, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Thuram">
+                        <div class="candidate-name">Marcus Thuram</div>
+                        <div class="candidate-info">France, 27 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ailiers Gauches -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">🏃‍♂️</span>
+                    Ailiers Gauches (Choisir 2)
+                </h2>
+                <div class="candidates-grid" data-position="ailiers_gauches" data-max="2">
+                    <div class="candidate" data-candidate="Mbappe">
+                        <div class="candidate-name">Kylian Mbappé</div>
+                        <div class="candidate-info">France, 26 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Leao">
+                        <div class="candidate-name">Rafael Leão</div>
+                        <div class="candidate-info">Portugal, 25 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Nkunku">
+                        <div class="candidate-name">Christopher Nkunku</div>
+                        <div class="candidate-info">France, 27 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Barcola">
+                        <div class="candidate-name">Bradley Barcola</div>
+                        <div class="candidate-info">France, 22 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attaquants -->
+            <div class="position-section">
+                <h2 class="position-title">
+                    <span class="position-icon">⚡</span>
+                    Attaquants (Choisir 2)
+                </h2>
+                <div class="candidates-grid" data-position="attaquants" data-max="2">
+                    <div class="candidate" data-candidate="Benzema">
+                        <div class="candidate-name">Karim Benzema</div>
+                        <div class="candidate-info">France, 37 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Giroud">
+                        <div class="candidate-name">Olivier Giroud</div>
+                        <div class="candidate-info">France, 38 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Kolo_Muani">
+                        <div class="candidate-name">Randal Kolo Muani</div>
+                        <div class="candidate-info">France, 26 ans</div>
+                    </div>
+                    <div class="candidate" data-candidate="Lacazette">
+                        <div class="candidate-name">Alexandre Lacazette</div>
+                        <div class="candidate-info">France, 33 ans</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vote-summary" id="voteSummary">
+                <h3>📋 Résumé de vos votes :</h3>
+                <div id="summaryContent"></div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    🗳️ Soumettre mon Vote
+                </button>
+                <div class="navigation">
+                    <a href="#" class="nav-btn" onclick="window.open('statistics.html', '_blank')">
+                        📊 Voir les Statistiques
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        
+        let votes = {
+            gardiens: [],
+            lateraux_droits: [],
+            lateraux_gauches: [],
+            defenseurs: [],
+            milieux: [],
+            ailiers_droits: [],
+            ailiers_gauches: [],
+            attaquants: []
+        };
+
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function updateVoteSummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            let html = '';
+            
+            Object.keys(votes).forEach(position => {
+                if (votes[position].length > 0) {
+                    const positionName = position.replace('_', ' ').toUpperCase();
+                    html += `<strong>${positionName}:</strong> ${votes[position].join(', ')}<br>`;
+                }
+            });
+            
+            summaryContent.innerHTML = html || 'Aucun vote sélectionné';
+            
+            // Vérifier si tous les votes requis sont faits
+            const totalRequired = 3 + 2 + 2 + 4 + 6 + 2 + 2 + 2; // 23 joueurs
+            const totalSelected = Object.values(votes).reduce((sum, arr) => sum + arr.length, 0);
+            
+            document.getElementById('submitBtn').disabled = totalSelected !== totalRequired;
+        }
+
+        // Gestion des clics sur les candidats
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.candidate')) {
+                const candidate = e.target.closest('.candidate');
+                const candidateName = candidate.dataset.candidate;
+                const positionGrid = candidate.closest('.candidates-grid');
+                const position = positionGrid.dataset.position;
+                const maxVotes = parseInt(positionGrid.dataset.max);
+                
+                if (candidate.classList.contains('selected')) {
+                    // Désélectionner
+                    candidate.classList.remove('selected');
+                    votes[position] = votes[position].filter(name => name !== candidateName);
+                } else {
+                    // Sélectionner si pas au maximum
+                    if (votes[position].length < maxVotes) {
+                        candidate.classList.add('selected');
+                        votes[position].push(candidateName);
+                    } else {
+                        showAlert(`Vous ne pouvez sélectionner que ${maxVotes} candidat(s) pour cette position!`, 'error');
+                    }
+                }
+                
+                updateVoteSummary();
+            }
+        });
+
+        // Soumission du formulaire
+        document.getElementById('voteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                // Créer le contenu du vote avec timestamp
+                const timestamp = new Date().toLocaleString('fr-FR');
+                let voteContent = `VOTE - ${timestamp}\n`;
+                voteContent += '='.repeat(50) + '\n';
+                
+                Object.keys(votes).forEach(position => {
+                    if (votes[position].length > 0) {
+                        const positionName = position.replace('_', ' ').toUpperCase();
+                        voteContent += `${positionName}: ${votes[position].join(', ')}\n`;
+                    }
+                });
+                
+                voteContent += '\n';
+
+                // Sauvegarder dans le localStorage pour la démo (en production, utilisez une API)
+                let allVotes = JSON.parse(localStorage.getItem('footballVotes') || '[]');
+                allVotes.push({
+                    timestamp: timestamp,
+                    votes: votes
+                });
+                localStorage.setItem('footballVotes', JSON.stringify(allVotes));
+
+                // En production, remplacez par un appel API:
+                /*
+                const response = await fetch('/api/save-vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: voteContent,
+                        votes: votes
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la sauvegarde');
+                }
+                */
+                
+                showAlert('✅ Vote enregistré avec succès!');
+                
+                // Réinitialiser le formulaire après 2 secondes
+                setTimeout(() => {
+                    document.querySelectorAll('.candidate.selected').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    votes = {
+                        gardiens: [],
+                        lateraux_droits: [],
+                        lateraux_gauches: [],
+                        defenseurs: [],
+                        milieux: [],
+                        ailiers_droits: [],
+                        ailiers_gauches: [],
+                        attaquants: []
+                    };
+                    updateVoteSummary();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('❌ Erreur lors de la sauvegarde du vote', 'error');
+            }
+        });
+
+        // Initialiser
+        updateVoteSummary();
+    </script>
+</body>
+</html>
